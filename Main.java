@@ -146,12 +146,12 @@ public class Main {
 		text = text.replace("],", "],\n");
 		text = text.replace(""+MIN, "O");
 		text = text.replace(""+MAX, "X");
-		text = text.replace(""+NONE, "-");
+		text = text.replace(""+NONE, "·");
 		text = text.replace(",", "");
 		text = text.replace("[", " ");
 		text = text.replace("]", " ");
 		text = text.replace(" ", "");
-		//text = text.replace("-", " ");
+		//text = text.replace("·", " ");
 		System.out.println( text );
 	}
 
@@ -182,11 +182,9 @@ public class Main {
 		}
 
 		/**/
-		if(depth == 1) {
-			print( board );
-			System.out.println(sum);
-			System.out.println();
-		}
+		print( board );
+		System.out.println(sum);
+		System.out.println();
 		/**/
 
 		return sum;
