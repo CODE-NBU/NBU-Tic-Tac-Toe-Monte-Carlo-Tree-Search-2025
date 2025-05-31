@@ -1,9 +1,12 @@
 // clear && astyle --style=java --indent=tab *.java && javac Main.java && java Main
 
+import java.util.Random;
 import java.util.Arrays;
 import java.util.Optional;
 
 public class Main {
+	private static final Random PRNG = new Random();
+
 	private static enum Tile {
 		E( 0),
 		O(-1),
@@ -146,7 +149,7 @@ public class Main {
 		text = text.replace("],", "],\n");
 		text = text.replace(""+MIN, "O");
 		text = text.replace(""+MAX, "X");
-		text = text.replace(""+NONE, "·");
+		text = text.replace(""+NONE, ".");
 		text = text.replace(",", "");
 		text = text.replace("[", " ");
 		text = text.replace("]", " ");
@@ -181,7 +184,7 @@ public class Main {
 			}
 		}
 
-		/**/
+		/*
 		print( board );
 		System.out.println(sum);
 		System.out.println();
@@ -190,9 +193,72 @@ public class Main {
 		return sum;
 	}
 
+	private static int mts(int board[][], int player, int depth) {
+		Optional<Integer> score = hasWinner( board );
+		if(score.isEmpty() == false) {
+			return score.get();
+		}
+
+		int i = -1;
+		int j = -1;
+		do {
+			i = PRNG.nextInt(3);
+			j = PRNG.nextInt(3);
+		} while(board[i][j] != NONE);
+
+		board[i][j] = player;
+		int result = mts(board, (player==MAX)?MIN:MAX, depth+1);
+		board[i][j] = NONE;
+
+		return result;
+	}
+
 	public static void main(String args[]) {
 		reset( board );
 
-		trace(board, MAX, 0);
+		//trace(board, MAX, 0);
+
+		board[0][1] = MAX;
+		board[1][0] = MIN;
+		board[2][1] = MAX;
+		board[1][2] = MIN;
+		print(board);
+
+		int ITERATIONS = 9_000_000;
+
+		double probabilities[][] = {
+			{0, 0, 0,},
+			{0, 0, 0,},
+			{0, 0, 0,},
+		};
+
+		int g;
+		for(g=0; g<ITERATIONS; g++)	{
+//	    long stop = System.currentTimeMillis() + 5000;
+//	    for(g=0; System.currentTimeMillis()<stop; g++)	{
+			int i = -1;
+			int j = -1;
+			do {
+				i = PRNG.nextInt(3);
+				j = PRNG.nextInt(3);
+			} while(board[i][j] != NONE);
+
+			board[i][j] = MAX;
+//print(board);
+//System.out.println();
+			int result = mts(board, MIN, 1);
+			if(result == MAX) {
+				probabilities[i][j]++;
+			}
+			board[i][j] = NONE;
+		}
+
+//	    for(int i=0; i<3; i++) {
+//            for(int j=0; j<3; j++) {
+//                probabilities[i][j] /= g;
+//            }
+//	    }
+
+		System.out.println( Arrays.deepToString(probabilities).replace("],", "],\n") );
 	}
 }
